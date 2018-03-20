@@ -92,9 +92,14 @@ def start_recognition(video_path):
     random_name = download_video(video_path)
     audio = convert_video_to_audio(random_name)
     text = audio_recognition(audio)
-    save_speech_to_txt(text, random_name)
 
-    return '{}.txt'.format(random_name)
+    if len(text) > 2000:
+        print(text)
+        save_speech_to_txt(text, random_name)
+
+        return '{}.txt'.format(random_name)
+    else:
+        return text
 
 
 # start_recognition('https://cdn.fbsbx.com/v/t59.3654-21/28702373_551823458532960_3042901848664047616_n.mp4/audioclip-1520942367000-2183.mp4?oh=213b4226f93f36d6040e21efbf739998&oe=5AAA3139')

@@ -118,15 +118,12 @@ def audio_recognition(path):
                 print('All is good {}'.format(part))
                 result = r.recognize_google(audio)
                 os.remove('{}{}.wav'.format(name, part))
-                print('Removed {}'.format(part))
             except Exception:
-                print('Problem Detected {}'.format(part))
                 result = ''
                 os.remove('{}{}.wav'.format(name, part))
                 break
 
             text = text + ' ' + result
-            print(text)
             part += 1
 
         os.remove(path)
@@ -212,50 +209,64 @@ def start(url):
             transcript_text = audio_recognition('{}-{}.wav'.format(title, video_id))
 
             if transcript_text == NOT_FOUND_ERROR:
-                return NOT_FOUND_ERROR
+                return NOT_FOUND_ERROR, NOT_FOUND_ERROR
             else:
-                outfile = os.path.expanduser(title + '.txt')
+                if len(transcript_text) > 2000:
+                    outfile = os.path.expanduser(title + '.txt')
 
-                # If user has not specified a filename, use the video title.
-                if os.path.isdir(outfile):
-                    outfile = os.path.join(outfile, title + '.txt')
+                    # If user has not specified a filename, use the video title.
+                    if os.path.isdir(outfile):
+                        outfile = os.path.join(outfile, title + '.txt')
 
-                try:
-                    print('save file')
-                    with open(outfile, 'w') as output_file:
-                        output_file.write('Title: ' + title + '\n\n')
-                        output_file.write(transcript_text)
+                    try:
+                        print('save file')
+                        with open(outfile, 'w') as output_file:
+                            output_file.write('Title: ' + title + '\n\n')
+                            output_file.write(transcript_text)
 
-                    return outfile
-                except IOError as errtext:
-                    if 'No such file or directory' in str(errtext):
-                        return NOT_FOUND_ERROR
-                    else:
-                        return NOT_FOUND_ERROR
+                        return outfile, NOT_FOUND_ERROR
+                    except IOError as errtext:
+                        if 'No such file or directory' in str(errtext):
+                            return NOT_FOUND_ERROR, NOT_FOUND_ERROR
+                        else:
+                            return NOT_FOUND_ERROR, NOT_FOUND_ERROR
+                else:
+                    return transcript_text, NOT_FOUND_ERROR
         except Exception:
-            return NOT_FOUND_ERROR
+            return NOT_FOUND_ERROR, NOT_FOUND_ERROR
     else:
         transcript_text = format_transcript(transcript_xml.decode('utf-8'))
         transcript_text = remove_extra_linebreaks(transcript_text)
+        print(transcript_text)
 
-        # Validate output path.
-        outfile = os.path.expanduser(title + '.txt')
+        if len(transcript_text) > 2000:
+            outfile = os.path.expanduser(title + '.txt')
+            outsrt = os.path.expanduser(title + '.srt')
 
-        # If user has not specified a filename, use the video title.
-        if os.path.isdir(outfile):
-            outfile = os.path.join(outfile, title + '.txt')
+            # If user has not specified a filename, use the video title.
+            if os.path.isdir(outfile):
+                outfile = os.path.join(outfile, title + '.txt')
 
-        try:
-            with open(outfile, 'w') as output_file:
-                output_file.write('Title: ' + title + '\n\n')
-                output_file.write(transcript_text)
+            if os.path.isdir(outsrt):
+                outsrt = os.path.join(outsrt, title + '.srt')
 
-            return outfile
-        except IOError as errtext:
-            if 'No such file or directory' in str(errtext):
-                return NOT_FOUND_ERROR
-            else:
-                return NOT_FOUND_ERROR
+            try:
+                with open(outfile, 'w') as output_file:
+                    output_file.write('Title: ' + title + '\n\n')
+                    output_file.write(transcript_text)
+
+                with open(outsrt, 'w') as output_srt:
+                    output_srt.write('Title: ' + title + '\n\n')
+                    output_srt.write(transcript_xml.decode('utf-8'))
+
+                return outfile, outsrt
+            except IOError as errtext:
+                if 'No such file or directory' in str(errtext):
+                    return NOT_FOUND_ERROR, NOT_FOUND_ERROR
+                else:
+                    return NOT_FOUND_ERROR, NOT_FOUND_ERROR
+        else:
+            return transcript_text, NOT_FOUND_ERROR
 
 
 # start('https://www.youtube.com/watch?v=KL2T0XRzWUI')
