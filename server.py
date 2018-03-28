@@ -11,8 +11,8 @@ from flask import Flask, request
 from speech_test import start_recognition
 from requests_toolbelt import MultipartEncoder
 
-ACCESS_TOKEN = 'EAALy86BNuZBcBALMGf1rhnd9B8raL1DAXyrwXgKKgc7N8XVOMKz00eCywZAF6GYgPzLmLmTx0n40KbXA1QA6fIYrth4D5srJRhlYmFFbpp65oFVVBYVgDuF70SlIqLcoqr0K8awZCEdZBRQG1S5wsS0n50yMw1DctjNjKsThZCLx6Hlrpvs6p'
-VERIFY_TOKEN = 'YoutubeTranscript'
+ACCESS_TOKEN = ''
+VERIFY_TOKEN = ''
 
 NOT_FOUND_ERROR = 'ERROR: No transcript found. This can mean one of several things:\n- There is no ' \
                   'human-created transcript for this video.\n- The video URL was entered incorrectly.\n' \
